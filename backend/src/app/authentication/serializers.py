@@ -2,8 +2,10 @@ from django.conf import settings
 from django.core.validators import RegexValidator
 from rest_framework import serializers
 
+from .models import SignUpRequest
 
-class SignUpSerializer(serializers.Serializer):
+
+class SignUpSerializer(serializers.ModelSerializer):
 
     email = serializers.EmailField(max_length=100)
 
@@ -44,3 +46,11 @@ class SignUpSerializer(serializers.Serializer):
                 "Your email's domain is blacklisted. Please use another one."
             )
         return value
+
+    def save(self, *, ip_addr: str, **kwargs):
+        return super(SignUpSerializer, self).save(ip_addr=ip_addr, **kwargs)
+
+    class Meta:
+        model = SignUpRequest
+        fields = ["email", "password", "first_name", "last_name"]
+
