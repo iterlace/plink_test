@@ -1,0 +1,25 @@
+version: "3.3"
+
+services:
+
+  backend:
+    image: "${DOCKER_IMAGE?Variable not set}:${DOCKER_TAG-latest}"
+    build:
+      context: backend
+      dockerfile: backend.dockerfile
+      args:
+        DEBUG: ${DEBUG:-0}
+        TEST: ${TEST:-0}
+    volumes:
+      - "plink_storage:/var/lib/plink/"
+    environment:
+      - DEBUG=${DEBUG:-0}
+      - TEST=${TEST:-0}
+      - SECRET_KEY=${SECRET_KEY}
+      - SENTRY_DSN=${SENTRY_DSN}
+      - DB_PATH=/var/lib/plink/db.sqlite3
+    command: bash -c ". /app/scripts/runserver.sh"
+
+volumes:
+  plink_storage:
+    driver: local

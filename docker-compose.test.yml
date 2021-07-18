@@ -1,0 +1,14 @@
+version: "3.3"
+
+services:
+  
+  backend:
+    build:
+      args:
+        DEBUG: 0
+        TEST: 1
+    environment:
+      - DEBUG=0
+      - TEST=1
+    volumes:
+      - ./backend/src:/app
