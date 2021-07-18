@@ -1,6 +1,9 @@
+from typing import Any
+
 from django.conf import settings
-from django.core.validators import RegexValidator
 from rest_framework import serializers
+from django.db.models import Model
+from django.core.validators import RegexValidator
 
 from .models import SignUpRequest
 
@@ -47,10 +50,9 @@ class SignUpSerializer(serializers.ModelSerializer):
             )
         return value
 
-    def save(self, *, ip_addr: str, **kwargs):
+    def save(self, *, ip_addr: str, **kwargs: Any) -> Model:
         return super(SignUpSerializer, self).save(ip_addr=ip_addr, **kwargs)
 
     class Meta:
         model = SignUpRequest
         fields = ["email", "password", "first_name", "last_name"]
-

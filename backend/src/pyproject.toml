@@ -22,6 +22,14 @@ flake8 = "^3.9.2"
 pytest-cov = "^2.12.1"
 pytest-django = "^4.4.0"
 
+[tool.isort]
+profile = "hug"
+src_paths = ["isort", "test"]
+known_django = ["django", "rest_framework"]
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "DJANGO", "FIRSTPARTY", "LOCALFOLDER"]
+length_sort = true
+line_length = 79
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"

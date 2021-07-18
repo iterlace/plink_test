@@ -1,4 +1,10 @@
-from django.db.models import Model, GenericIPAddressField, EmailField, TextField, AutoField
+from django.db.models import (
+    Model,
+    AutoField,
+    TextField,
+    EmailField,
+    GenericIPAddressField,
+)
 
 
 class SignUpRequest(Model):

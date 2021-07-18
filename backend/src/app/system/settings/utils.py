@@ -1,7 +1,7 @@
 import os
-from typing import Any, Dict, Optional, Type, TypeVar
+from typing import Any, Dict, Type, TypeVar, Optional
 
-from system.settings.exceptions import ImproperlyConfigured
+from app.system.settings.exceptions import ImproperlyConfigured
 
 __all__ = ["get_option", "print_options"]
 

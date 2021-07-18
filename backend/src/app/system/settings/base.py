@@ -10,10 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
-from pathlib import Path
 from typing import List
+from pathlib import Path
 
-from system.settings.utils import get_option
+from app.system.settings.utils import get_option
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -107,6 +107,19 @@ AUTH_PASSWORD_VALIDATORS = [  # type: ignore
     #     "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     # },
 ]
+
+
+REST_FRAMEWORK = {
+    # "DEFAULT_AUTHENTICATION_CLASSES": (),
+    "DEFAULT_RENDERER_CLASSES": (
+        "api.api_v1.renderers.DetailedRenderer",
+        "rest_framework.renderers.BrowsableAPIRenderer",
+    ),
+    # "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    # "PAGE_SIZE": 50,
+    # "EXCEPTION_HANDLER": "api.v1.handlers.custom_exception_handler",
+    "TEST_REQUEST_DEFAULT_FORMAT": "json",
+}
 
 
 # Internationalization

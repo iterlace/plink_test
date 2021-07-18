@@ -9,4 +9,5 @@ black app
 echo "\n"
 
 echo "Running isort"
-isort app
+isort app -p app/
+
