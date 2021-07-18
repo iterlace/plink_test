@@ -10,6 +10,10 @@ services:
       args:
         DEBUG: ${DEBUG:-0}
         TEST: ${TEST:-0}
+    ports:
+      - "8000:8000"
+    expose:
+      - "8000"
     volumes:
       - "plink_storage:/var/lib/plink/"
     environment:
