@@ -10,8 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
-from typing import List
 from pathlib import Path
+from datetime import timedelta
 
 from app.system.settings.utils import get_option
 
@@ -41,9 +41,12 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "rest_framework_simplejwt",
 ]
 
-PROJECT_APPS: List[str] = ["authentication"]
+PROJECT_APPS = [
+    "authentication",
+]
 
 INSTALLED_APPS += PROJECT_APPS
 
@@ -90,6 +93,10 @@ DATABASES = {
 }
 
 
+# User model
+AUTH_USER_MODEL = "authentication.User"
+
+
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
@@ -110,7 +117,9 @@ AUTH_PASSWORD_VALIDATORS = [  # type: ignore
 
 
 REST_FRAMEWORK = {
-    # "DEFAULT_AUTHENTICATION_CLASSES": (),
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
     "DEFAULT_RENDERER_CLASSES": (
         "api.api_v1.renderers.DetailedRenderer",
         "rest_framework.renderers.BrowsableAPIRenderer",
@@ -119,6 +128,22 @@ REST_FRAMEWORK = {
     # "PAGE_SIZE": 50,
     # "EXCEPTION_HANDLER": "api.v1.handlers.custom_exception_handler",
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "UPDATE_LAST_LOGIN": True,
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": SECRET_KEY,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "user_id",
+    "USER_AUTHENTICATION_RULE": "rest_framework_simplejwt.authentication.default_user_authentication_rule",
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+    "TOKEN_TYPE_CLAIM": "token_type",
+    "JTI_CLAIM": "jti",
 }
 
 

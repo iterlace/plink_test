@@ -2,35 +2,35 @@ from typing import Any
 
 from app.system.helpers import get_client_ip
 
-from rest_framework import mixins, generics
-from django.db.models import QuerySet
+from rest_framework import status, generics
+from django.contrib.auth import get_user_model
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.renderers import BrowsableAPIRenderer
-from rest_framework.serializers import Serializer
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from authentication.models import SignUpRequest
 from authentication.serializers import SignUpSerializer
 
 from .renderers import DetailedRenderer
 
+User = get_user_model()
 
-class SignUpRequestsList(
-    mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
-):
+
+class SignUpView(generics.GenericAPIView):
     serializer_class = SignUpSerializer
     renderer_classes = [DetailedRenderer, BrowsableAPIRenderer]
 
-    def get_queryset(self) -> QuerySet:
-        ip = get_client_ip(self.request)
-        qs = SignUpRequest.objects.filter(ip_addr=ip)
-        return qs
-
-    def perform_create(self, serializer: Serializer) -> None:
-        serializer.save(ip_addr=get_client_ip(self.request))
-
-    def get(self, request: Request, *args: Any, **kwargs: Any) -> Response:
-        return self.list(request, *args, **kwargs)
-
     def post(self, request: Request, *args: Any, **kwargs: Any) -> Response:
-        return self.create(request, *args, **kwargs)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        serializer.save(signup_ip_addr=get_client_ip(self.request))
+
+        response_serializer = TokenObtainPairSerializer(
+            {
+                "email": request.data["email"],
+                "password": request.data["password"],
+            },
+            context={"request": request},
+        )
+        return Response(response_serializer.data, status=status.HTTP_201_CREATED)

@@ -1,34 +1,43 @@
-from typing import Any
+from typing import Any, Dict
 
 from django.conf import settings
 from rest_framework import serializers
-from django.db.models import Model
 from django.core.validators import RegexValidator
+from rest_framework.validators import UniqueValidator
 
-from .models import SignUpRequest
+from .models import User
 
 
 class SignUpSerializer(serializers.ModelSerializer):
 
-    email = serializers.EmailField(max_length=100)
+    email = serializers.EmailField(
+        max_length=100,
+        validators=[
+            UniqueValidator(
+                queryset=User.objects.all(),
+                message="The user with this email is already " "registered.",
+            )
+        ],
+    )
 
     password = serializers.CharField(
         min_length=7,
         max_length=16,
         validators=[
             RegexValidator(
-                r"^[A-Z][a-zA-Z0-9_]*?$",
-                "The password must begin with a capitalized letter, and contain only "
+                regex=r"^[A-Z][a-zA-Z0-9_]*?$",
+                message="The password must begin with a capitalized letter, and contain only "
                 "letters, digits and underscores.",
             )
         ],
+        write_only=True,
     )
 
     first_name = serializers.CharField(
         validators=[
             RegexValidator(
-                r"^[a-zA-Z\-]*$",
-                "The first name must contain only letters and hyphens.",
+                regex=r"^[a-zA-Z\-]*$",
+                message="The first name must contain only letters and hyphens.",
             )
         ]
     )
@@ -36,8 +45,8 @@ class SignUpSerializer(serializers.ModelSerializer):
     last_name = serializers.CharField(
         validators=[
             RegexValidator(
-                r"^[a-zA-Z\- ]*$",
-                "The last name must contain only letters, hyphens and spaces.",
+                regex=r"^[a-zA-Z\- ]*$",
+                message="The last name must contain only letters, hyphens and spaces.",
             )
         ]
     )
@@ -50,9 +59,16 @@ class SignUpSerializer(serializers.ModelSerializer):
             )
         return value
 
-    def save(self, *, ip_addr: str, **kwargs: Any) -> Model:
-        return super(SignUpSerializer, self).save(ip_addr=ip_addr, **kwargs)
+    def create(self, validated_data: Dict[str, Any]) -> User:
+        user = User.objects.create_user(**validated_data)
+        return user
+
+    def update(self, instance: User, validated_data: Dict[str, Any]) -> User:
+        if "password" in validated_data:
+            password = validated_data.pop("password")
+            instance.set_password(password)
+        return super(SignUpSerializer, self).update(instance, validated_data)  # type: ignore
 
     class Meta:
-        model = SignUpRequest
-        fields = ["email", "password", "first_name", "last_name"]
+        model = User
+        fields = ("email", "password", "first_name", "last_name")

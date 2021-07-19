@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any, Mapping, Optional
 
 from rest_framework.renderers import JSONRenderer
 
@@ -8,7 +8,7 @@ class DetailedRenderer(JSONRenderer):
         self,
         data: Any,
         accepted_media_type: Optional[Any] = None,
-        renderer_context: Optional[dict] = None,
+        renderer_context: Optional[Mapping[str, Any]] = None,
     ) -> str:
         status_code: int = renderer_context["response"].status_code  # type: ignore
         response = {
