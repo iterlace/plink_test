@@ -46,6 +46,7 @@ INSTALLED_APPS = [
 
 PROJECT_APPS = [
     "authentication",
+    "notes",
 ]
 
 INSTALLED_APPS += PROJECT_APPS
